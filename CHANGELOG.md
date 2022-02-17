@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add `axi_sim_mem_intf` interface variant of `axi_sim_mem`.
 - `axi_to_mem`: AXI4+ATOP slave to control on chip memory.
+- `axi_to_mem_banked`:  AXI4+ATOP slave to control on chip memory, with banking support, higher
+                        throughput than `axi_to_mem`.
+- `Bender`: Add dependency `tech_cells_generic` `v0.2.1` for generic SRAM macro for simulation.
 
 ### Changed
 - `axi_demux`: Use flat select signal independent of tool-specific defines, to further improve
