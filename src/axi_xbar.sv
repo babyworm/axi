@@ -44,12 +44,22 @@ import cf_math_pkg::idx_width;
   input  mst_resp_t [Cfg.NoMstPorts-1:0]                                mst_ports_resp_i,
   input  rule_t     [Cfg.NoAddrRules-1:0]                               addr_map_i,
   input  logic      [Cfg.NoSlvPorts-1:0]                                en_default_mst_port_i,
+`ifdef VCS
+  input  logic      [Cfg.NoSlvPorts-1:0][$clog2(Cfg.NoMstPorts)-1:0]    default_mst_port_i
+`else
   input  logic      [Cfg.NoSlvPorts-1:0][idx_width(Cfg.NoMstPorts)-1:0] default_mst_port_i
+`endif
 );
 
   typedef logic [Cfg.AxiAddrWidth-1:0]           addr_t;
   // to account for the decoding error slave
+`ifdef VCS
+  typedef logic [$clog2(Cfg.NoMstPorts + 1)-1:0] mst_port_idx_t;
+  if (Cfg.NoMstPorts == 1)
+    $fatal(1, "vcs doesn't support Cfg.NoMstPorts=1");
+`else
   typedef logic [idx_width(Cfg.NoMstPorts + 1)-1:0] mst_port_idx_t;
+`endif
 
   // signals from the axi_demuxes, one index more for decode error
   slv_req_t  [Cfg.NoSlvPorts-1:0][Cfg.NoMstPorts:0]  slv_reqs;
@@ -63,7 +73,11 @@ import cf_math_pkg::idx_width;
   slv_resp_t [Cfg.NoMstPorts-1:0][Cfg.NoSlvPorts-1:0] mst_resps;
 
   for (genvar i = 0; i < Cfg.NoSlvPorts; i++) begin : gen_slv_port_demux
+`ifdef VCS
+    logic [$clog2(Cfg.NoMstPorts)-1:0]    dec_aw,        dec_ar;
+`else
     logic [idx_width(Cfg.NoMstPorts)-1:0] dec_aw,        dec_ar;
+`endif
     mst_port_idx_t                        slv_aw_select, slv_ar_select;
     logic                                 dec_aw_valid,  dec_aw_error;
     logic                                 dec_ar_valid,  dec_ar_error;
@@ -255,7 +269,11 @@ import cf_math_pkg::idx_width;
   AXI_BUS.Master                                                    mst_ports [Cfg.NoMstPorts-1:0],
   input  rule_t [Cfg.NoAddrRules-1:0]                               addr_map_i,
   input  logic  [Cfg.NoSlvPorts-1:0]                                en_default_mst_port_i,
+`ifdef VCS
+  input  logic  [Cfg.NoSlvPorts-1:0][$clog2(Cfg.NoMstPorts)-1:0]    default_mst_port_i
+`else
   input  logic  [Cfg.NoSlvPorts-1:0][idx_width(Cfg.NoMstPorts)-1:0] default_mst_port_i
+`endif
 );
 
   localparam int unsigned AxiIdWidthMstPorts = Cfg.AxiIdWidthSlvPorts + $clog2(Cfg.NoSlvPorts);

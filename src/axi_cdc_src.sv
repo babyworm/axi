@@ -58,7 +58,11 @@ module axi_cdc_src #(
 );
 
   cdc_fifo_gray_src #(
+`ifdef VCS
+    .T         ( aw_chan_t                    ),
+`else
     .T         ( logic [$bits(aw_chan_t)-1:0] ),
+`endif
     .LOG_DEPTH ( LogDepth                     )
   ) i_cdc_fifo_gray_src_aw (
     .src_clk_i,
@@ -72,7 +76,11 @@ module axi_cdc_src #(
   );
 
   cdc_fifo_gray_src #(
+`ifdef VCS
+    .T         ( w_chan_t                     ),
+`else
     .T         ( logic [$bits(w_chan_t)-1:0]  ),
+`endif
     .LOG_DEPTH ( LogDepth                     )
   ) i_cdc_fifo_gray_src_w (
     .src_clk_i,
@@ -86,7 +94,11 @@ module axi_cdc_src #(
   );
 
   cdc_fifo_gray_dst #(
+`ifdef VCS
+    .T         ( b_chan_t                     ),
+`else
     .T         ( logic [$bits(b_chan_t)-1:0]  ),
+`endif
     .LOG_DEPTH ( LogDepth                     )
   ) i_cdc_fifo_gray_dst_b (
     .dst_clk_i    ( src_clk_i                   ),
@@ -100,7 +112,11 @@ module axi_cdc_src #(
   );
 
   cdc_fifo_gray_src #(
+`ifdef VCS
+    .T         ( ar_chan_t                    ),
+`else
     .T         ( logic [$bits(ar_chan_t)-1:0] ),
+`endif
     .LOG_DEPTH ( LogDepth                     )
   ) i_cdc_fifo_gray_src_ar (
     .src_clk_i,
@@ -114,7 +130,11 @@ module axi_cdc_src #(
   );
 
   cdc_fifo_gray_dst #(
+`ifdef VCS
+    .T         ( r_chan_t                     ),
+`else
     .T         ( logic [$bits(r_chan_t)-1:0]  ),
+`endif
     .LOG_DEPTH ( LogDepth                     )
   ) i_cdc_fifo_gray_dst_r (
     .dst_clk_i    ( src_clk_i                   ),
