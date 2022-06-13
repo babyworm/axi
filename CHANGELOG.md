@@ -8,13 +8,103 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ### Added
-- Add `axi_sim_mem_intf` interface variant of `axi_sim_mem`.
 
 ### Changed
-- `axi_demux`: Use flat select signal independent of tool-specific defines, to further improve
-  compatibility with known EDA tool bugs (see #202).
 
 ### Fixed
+
+
+## 0.35.3 - 2022-05-03
+
+### Fixed
+- `axi_demux`: Eliminate unnecessary stalls of AW channel when the AR channel has reached its
+  maximum number of transactions.  Prior to this fix, `axi_demux` would always stall AWs while read
+  transactions were at their maximum (that is, while `MaxTrans` read transactions were outstanding).
+  However, this stall is only required when the AW that is being handled by `axi_demux` is an atomic
+  operation (ATOP) that entails an R response.  This fix therefore removes unnecessary stalls as
+  well as an unnecessary dependency between reads and writes.  The integrity of data or transactions
+  was not affected by this problem.
+
+
+## 0.35.2 - 2022-04-14
+
+### Fixed
+- `axi_lite_mux_intf`: Fix type of `slv` and `mst` interface ports; they were `AXI_BUS` instead of
+  `AXI_LITE`.
+- `axi_xbar_intf`: Fix order of parameters.  Prior to this fix, the `CONNECTIVITY` parameter was
+  defined using the `Cfg` parameter before the `Cfg` parameter was defined.
+- `axi_test::axi_rand_master`: Improve compatibility with simulators by changing an implication
+  inside an assertion to a conditional assertion.
+
+
+## 0.35.1 - 2022-03-31
+
+### Fixed
+- `axi_demux` and `axi_lite_demux`: Add missing spill registers for configurations with a single
+  master port.
+- `axi_demux_intf`: Add missing parameter (`ATOP_SUPPORT`) to optionally disable support for atomic
+  operations.
+- `axi_mux` and `axi_lite_mux`: Add missing spill registers for configurations with a single slave
+  port.
+- `axi_lite_mux_intf`: Add missing parameter values on the internal `axi_lite_mux` instance
+  (`axi_req_t` and `axi_resp_t`).
+- `axi_sim_mem`: Propagate the AR channel's user signal correctly to the monitor.
+
+
+## 0.35.0 - 2022-03-11
+
+### Added
+- `axi_sim_mem`: Add monitoring interface to observe the point of coherency between the write and
+  the read channel.
+
+### Fixed
+- `axi_sim_mem`: Keep R response stable while not accepted.
+
+
+## 0.34.0 - 2022-03-09
+
+### Added
+- `axi_demux` and `axi_isolate`: Add parameter `AtopSupport` to optionally disable the support for
+  atomic operations (ATOPs).  This parameter defaults to `1'b1`, i.e., ATOPs are supported.
+  Therefore, this change is backward-compatible.
+- `axi_isolate`: Add parameter `TerminateTransaction` to optionally respond to transactions during
+  isolation.  This parameter defaults to `1'b0`, i.e., transactions do not get responses.
+  Therefore, this change is backward-compatible.
+- `axi_xbar`: Add `Connectivity` parameter to enable the implementation of partially-connected
+  crossbars.  This parameter defaults to `'1`, i.e., every slave port is connected to every master
+  port.  Therefore, this change is backward-compatible.
+- `axi_test`: Add monitor class `axi_monitor`.
+- `axi_test::axi_driver`: Add monitor tasks.
+
+### Changed
+- `axi_isolate`: Add parameters for the address, data, ID, and user signal width.  This is required
+  for the implementation of the `TerminateTransaction` parameter (see *Added* section).  This change
+  is **backward-incompatible** for all instances of `axi_isolate` outside this repository.  Users
+  must update all instances of `axi_isolate` in their code.  The interface variant is not affected
+  and remains backward-compatible.
+
+
+## 0.33.1 - 2022-02-26
+
+### Fixed
+- `axi_xbar_intf`: Add missing `ATOPS` parameter to optionally disable the support of atomic
+  operations (introduced in v0.25.0 for `axi_xbar`).  The default value of the added parameter makes
+  this fix backward-compatible.
+
+
+## 0.33.0 - 2022-02-21
+
+### Added
+- Add `axi_sim_mem_intf` interface variant of `axi_sim_mem`.
+
+### Fixed
+- `axi_cdc`: Improve compatibility with VCS by restricting a QuestaSim workaround to be used only
+  for QuestaSim (issue #207).
+- `axi_id_remap`: Improve compatibility with Verilator by excluding `assert`s for that tool.
+- `axi_lite_demux`: Improve compatibility with VCS (issue #187 reported for `axi_demux`, which was
+  fixed in v0.29.2).
+- `axi_xbar`: Improve compatibility with VCS by adding VCS-specific code that does not use constant
+  function calls (#208).
 
 
 ## 0.32.0 - 2022-01-25
